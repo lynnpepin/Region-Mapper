@@ -100,7 +100,7 @@ class RegionMapper:
         
         width, height = image.shape[:2]
         
-        assert(len(image.shape) == 3), "image should be np array shaped (width, height, number_of_channels_in_image)"
+        assert(len(image.shape) == 3 or len(image.shape) == 2), "image should be np array shaped (width, height) or (width, height, number_of_channels_in_image)"
         
         ####
         # Create self._image:
