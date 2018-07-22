@@ -55,12 +55,17 @@ ortho_map = ((1,0),  (0,-1), (-1,0), (0,1))
 diag_map  = ((1,-1), (-1,-1),(-1,1), (1,1))
 
 def _value_to_class(class_dict, value):
-    # TODO: This should be more general, and not assume
-    #   the underlying datatype is array-like-1D
-    if tuple(value) in class_dict.keys():
-        return class_dict[tuple(value)]
+    if len(value.shape) == 1: # Is tuple-able
+        if tuple(value) in class_dict.keys():
+            return class_dict[tuple(value)]
+        else:
+            return 0
+    elif len(value.shape) == 0: # Is just an int
+        if value in class_dict.keys():
+            return class_dict[value]
+        else: return 0
     else:
-        return 0
+        raise ValueError
 
 
 def _class_to_map(nbhd_offsets, value, default=ortho_map):
