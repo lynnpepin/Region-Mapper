@@ -25,7 +25,7 @@ def _class_to_map(nbhd_offsets, value, default=ortho_map):
         return default
 
 
-def _get_adacent_pixels(x, y, w, h, nbhd_map = ortho_map, wrap = False):
+def _get_adjacent_pixels(x, y, w, h, nbhd_map = ortho_map, wrap = False):
     # Returns only valid pixels; order of pixels not guaranteed
     # E.g. adjacent_pixels(0,0,3,4) = [(1,0),(0,3),(0,2),(0,1)]
     # E.g. adjacent_pixles(0,0,0,0, wrap=False) = [(1,0),(0,1)]
@@ -71,7 +71,7 @@ class RegionMapper:
         if sparse:
             self._region_at_pixel = dict()
         else:
-            self._region_at_pixel = np.zeros((width, height))
+            self._region_at_pixel = np.zeros((width, height)) - 1
         # _regions_with_class:
         # E.g. _regions_with_class[2] = [1,4,3] # Regions 1, 4, and 3 the ones with class 3
         self._regions_with_class = dict()
@@ -104,7 +104,7 @@ class RegionMapper:
                         list_of_pixels_in_region.append((xi, yi)) # = [..., (x,y)]
                         self._region_at_pixel[xi, yi] = region
                         # For each adjacent pixel, if it's the same class, add it to the list of pixels we're going to explore
-                        for xJ, yJ in _get_adacent_pixels(x=xi, y=yi, w=width, h=height, nbhd_map = contig_map):
+                        for xJ, yJ in _get_adjacent_pixels(x=xi, y=yi, w=width, h=height, nbhd_map = contig_map, wrap = wrap):
                            if self._image[xJ, yJ] == region_class and rec[xJ, yJ] == False:
                                pixels_under_consideration.append((xJ, yJ))
                                rec[xJ, yJ] = True
@@ -117,6 +117,24 @@ class RegionMapper:
                         self._regions_with_class[region_class].append(region)
                     
                     region += 1
+        
+        ####
+        # Identify adjacent regions
+        ####
+        self._adjacent_regions = [[] for _ in range(len(self._regions))]
+        
+        for ii, (region_class, list_of_pixels) in enumerate(self._regions): #ii is region id
+            # nbhd_map = The list of pixel offsets of what this class considers its neighbours
+            nbhd_map = _class_to_map(nbhd_offsets = adjacencies, value = region_class)
+            
+            for xi, yi in list_of_pixels:                               # For every pixel in region ii,
+                for xJ, yJ in _get_adjacent_pixels(x=xi, y=yi, w=width, h=height, nbhd_map = nbhd_map, wrap = wrap): # For every pixel next to it,
+                    if not self._image[xJ,yJ] == 0:                     # If the neighbour is a valid region (not empty) and
+                        neighbour = self._region_at_pixel[xJ,yJ]        # (neighbour = The region number of the neighbour)
+                        if not (neighbour == ii):                       # If the neighbour is not us,
+                            if not neighbour in self._adjacent_regions[ii]: # and if we didn't already consider this neighbour...
+                                self._adjacent_regions[ii].append(neighbour)# Add neighbour!
+        
         
     def region_at_pixel(self,x,y):
         if self._image[x,y] == 0:
@@ -131,7 +149,7 @@ class RegionMapper:
         return self._regions_with_class[class_number]
     
     def adjacent_regions(self,region_id):
-        pass
+        return self._adjacent_regions[region_id]
 
     
 '''

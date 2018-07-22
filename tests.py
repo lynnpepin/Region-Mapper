@@ -100,7 +100,6 @@ class RegionMapperTest_OrthoNbhd_NoWrap(ut.TestCase):
         self.assertEqual(set(blus), set((reg2,reg5)))
         
 
-'''
     def test_adjacent_regions(self):
         reg1 = self.Mapped.region_at_pixel(0,0) # Top-left red splotch
         reg2 = self.Mapped.region_at_pixel(2,2) # Blue diagonal line
@@ -110,12 +109,12 @@ class RegionMapperTest_OrthoNbhd_NoWrap(ut.TestCase):
         reg6 = self.Mapped.region_at_pixel(3,0) # Top-right single red pixel
         
         self.assertEqual(self.Mapped.adjacent_regions(reg1), [reg2])
-        self.assertEqual(self.Mapped.adjacent_regions(reg2), [reg5, reg3])
-        self.assertEqual(self.Mapped.adjacent_regions(reg3), [reg6,reg2,reg5])
+        self.assertEqual(set(self.Mapped.adjacent_regions(reg2)), set([reg1, reg5, reg3]))
+        self.assertEqual(set(self.Mapped.adjacent_regions(reg3)), set([reg6,reg2,reg5]))
         self.assertEqual(self.Mapped.adjacent_regions(reg4), [])
-        self.assertEqual(self.Mapped.adjacent_regions(reg5), [reg2,reg3])
+        self.assertEqual(set(self.Mapped.adjacent_regions(reg5)), set([reg2,reg3]))
         self.assertEqual(self.Mapped.adjacent_regions(reg6), [reg3])
-'''
+
 
 
 all_tests = [RegionMapperTest_OrthoNbhd_NoWrap]
