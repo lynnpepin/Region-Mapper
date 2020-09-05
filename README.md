@@ -2,6 +2,8 @@
 
 Region Mapper is a Python class used to identify contiguous regions and the adjacent regions.
 
+Basically, it generates a graph from continuous regions.
+
 ## Usage:
 
 See the documentation of the RegionMapper class. Copied here:
