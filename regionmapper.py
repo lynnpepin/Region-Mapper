@@ -3,6 +3,7 @@ import numpy as np
 '''
 Public-facing variables:
 
+# some useful defaults"
 ortho_map = ((1,0),  (0,-1), (-1,0), (0,1))
 diag_map  = ((1,-1), (-1,-1),(-1,1), (1,1))
     
